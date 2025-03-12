@@ -350,7 +350,7 @@ def ejecutar_juego():
                     try:
                         sonido_fondo = pygame.mixer.music.load("./sound/fondo.mp3")
                         pygame.mixer.music.play(-1)
-                        pygame.mixer.music.set_volume(0.1)
+                        pygame.mixer.music.set_volume(0.5)
                     except:
                         print("No se pudo cargar el sonido de fondo")
                     iniciar_nivel(nivel_actual)
@@ -404,6 +404,7 @@ def ejecutar_juego():
                     try:
                         sonido_disparo = pygame.mixer.Sound("./sound/disparo.mp3")
                         sonido_disparo.play()
+                        
                     except:
                         pass
                     # Programar evento para volver al estado quieto Tony Mateo 23-eisn-2-044
@@ -419,6 +420,7 @@ def ejecutar_juego():
                     try:
                         sonido_disparo = pygame.mixer.Sound("./sound/disparo.mp3")
                         sonido_disparo.play()
+
                     except:
                         pass
                     # Programar evento para volver al estado quieto Tony Mateo 23-eisn-2-044
