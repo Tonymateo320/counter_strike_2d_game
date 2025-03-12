@@ -8,30 +8,30 @@ from behavior_tree import Selector, Secuencia, Hoja
 
 class Obstaculo:
     def __init__(self, x, y, ancho, alto, sprite_manager):
-        # Asegurar que las coordenadas sean enteros para evitar problemas de precisión
+        # Asegurar que las coordenadas sean enteros para evitar problemas de precisión (Tony Mateo 23-eisn-2-044)
         self.x = int(x)
         self.y = int(y)
         self.ancho = int(ancho)
         self.alto = int(alto)
-        # Crear el rectángulo de colisión con valores exactos
+        # Crear el rectángulo de colisión con valores exactos (Tony Mateo 23-eisn-2-044)
         self.rect = pygame.Rect(self.x, self.y, self.ancho, self.alto)
         self.sprite_manager = sprite_manager
         
     def dibujar(self, pantalla):
-        # Obtener el sprite del obstáculo
+        # Obtener el sprite del obstáculo (Tony Mateo 23-eisn-2-044)
         sprite = self.sprite_manager.get_sprite('obstaculo')
         if sprite:
-            # Escalar el sprite para que coincida EXACTAMENTE con el rectángulo de colisión
+            # Escalar el sprite para que coincida EXACTAMENTE con el rectángulo de colisión (Tony Mateo 23-eisn-2-044)
             sprite_escalado = pygame.transform.scale(sprite, (self.ancho, self.alto))
-            # Dibujar el sprite en la posición exacta del rectángulo
+            # Dibujar el sprite en la posición exacta del rectángulo (Tony Mateo 23-eisn-2-044)
             pantalla.blit(sprite_escalado, self.rect.topleft)
-            # Dibujar el borde del rectángulo para visualizar el área de colisión (si DEBUG_MODE está activo)
+            # Dibujar el borde del rectángulo para visualizar el área de colisión ,si DEBUG_MODE está activo (Tony Mateo 23-eisn-2-044)
             if DEBUG_MODE:
                 pygame.draw.rect(pantalla, (255, 0, 0), self.rect, 1)
         else:
-            # Si no hay sprite, dibujar un rectángulo sólido
+            # Si no hay sprite, dibujar un rectángulo sólido (Tony Mateo 23-eisn-2-044)
             pygame.draw.rect(pantalla, MARRON, self.rect)
-            # Dibujar borde de colisión si DEBUG_MODE está activo
+            # Dibujar borde de colisión si DEBUG_MODE está activo (Tony Mateo 23-eisn-2-044)
             if DEBUG_MODE:
                 pygame.draw.rect(pantalla, (255, 0, 0), self.rect, 1)
 
@@ -47,96 +47,96 @@ class Jugador:
         self.rect = pygame.Rect(x, y, self.ancho, self.alto)
         self.ultimo_disparo = 0
         self.sprite_manager = sprite_manager
-        self.direccion = "derecha"  # derecha, izquierda, arriba, abajo
-        self.estado = "quieto"  # quieto, moviendo, disparando
-        self.id = "jugador_1"  # ID único para el sprite_manager
-        # Iniciar animación por defecto
+        self.direccion = "derecha"  # derecha, izquierda, arriba, abajo (Tony Mateo 23-eisn-2-044)
+        self.estado = "quieto"  # quieto, moviendo, disparando (Tony Mateo 23-eisn-2-044)
+        self.id = "jugador_1"  # ID único para el sprite_manager (Tony Mateo 23-eisn-2-044)
+        # Iniciar animación por defecto (Tony Mateo 23-eisn-2-044)
         self.sprite_manager.play_animation(f"jugador_quieto_{self.direccion}", self.id)
         
     def mover(self, dx, dy, obstaculos):
-        # Manejar la animación según el movimiento
+        # Manejar la animación según el movimiento (Tony Mateo 23-eisn-2-044)
         if dx == 0 and dy == 0:
             if self.estado != "disparando":
                 self.estado = "quieto"
                 self.sprite_manager.play_animation(f"jugador_quieto_{self.direccion}", self.id)
             return
             
-        # Actualizar estado y dirección
+        # Actualizar estado y dirección (Tony Mateo 23-eisn-2-044)
         self.estado = "moviendo"
         if abs(dx) > abs(dy):
             self.direccion = "derecha" if dx > 0 else "izquierda"
         else:
             self.direccion = "abajo" if dy > 0 else "arriba"
             
-        # Actualizar animación
+        # Actualizar animación (Tony Mateo 23-eisn-2-044)
         self.sprite_manager.play_animation(f"jugador_{self.estado}_{self.direccion}", self.id)
         
-        # IMPORTANTE: Mover en X y en Y por separado para mejor detección de colisiones
+        # Mover en X y en Y por separado para mejor detección de colisiones (Tony Mateo 23-eisn-2-044)
         
-        # 1. Mover en X
+        # 1. Mover en X (Tony Mateo 23-eisn-2-044)
         nueva_x = self.x + dx
         
-        # Verificar límites de pantalla
+        # Verificar límites de pantalla (Tony Mateo 23-eisn-2-044)
         if nueva_x < 0:
             nueva_x = 0
         elif nueva_x > ANCHO - self.ancho:
             nueva_x = ANCHO - self.ancho
             
-        # Crear un rect temporal para probar el movimiento en X
+        # Crear un rect temporal para probar el movimiento en X (Tony Mateo 23-eisn-2-044)
         temp_rect_x = pygame.Rect(nueva_x, self.y, self.ancho, self.alto)
         
-        # Verificar colisiones en X
+        # Verificar colisiones en X (Tony Mateo 23-eisn-2-044)
         colision_x = False
         for obstaculo in obstaculos:
             if temp_rect_x.colliderect(obstaculo.rect):
                 colision_x = True
-                # Ajustar posición para que quede justo al borde del obstáculo
-                if dx > 0:  # Moviendo a la derecha
+                # Ajustar posición para que quede justo al borde del obstáculo (Tony Mateo 23-eisn-2-044)
+                if dx > 0:  # Moviendo a la derecha (Tony Mateo 23-eisn-2-044) 
                     nueva_x = obstaculo.rect.left - self.ancho
-                else:  # Moviendo a la izquierda
+                else:  # Moviendo a la izquierda (Tony Mateo 23-eisn-2-044)
                     nueva_x = obstaculo.rect.right
                 break
                 
-        # Actualizar posición en X si no hay colisión o después de ajustar
+        # Actualizar posición en X si no hay colisión o después de ajustar (Tony Mateo 23-eisn-2-044)
         self.x = nueva_x
         
-        # 2. Mover en Y
+        # 2. Mover en Y (Tony Mateo 23-eisn-2-044)
         nueva_y = self.y + dy
         
-        # Verificar límites de pantalla
+        # Verificar límites de pantalla (Tony Mateo 23-eisn-2-044)
         if nueva_y < 0:
             nueva_y = 0
         elif nueva_y > ALTO - self.alto:
             nueva_y = ALTO - self.alto
             
-        # Crear un rect temporal para probar el movimiento en Y
+        # Crear un rect temporal para probar el movimiento en Y (Tony Mateo 23-eisn-2-044)
         temp_rect_y = pygame.Rect(self.x, nueva_y, self.ancho, self.alto)
         
-        # Verificar colisiones en Y
+        # Verificar colisiones en Y (Tony Mateo 23-eisn-2-044)
         colision_y = False
         for obstaculo in obstaculos:
             if temp_rect_y.colliderect(obstaculo.rect):
                 colision_y = True
-                # Ajustar posición para que quede justo al borde del obstáculo
-                if dy > 0:  # Moviendo hacia abajo
+                # Ajustar posición para que quede justo al borde del obstáculo (Tony Mateo 23-eisn-2-044)
+                if dy > 0:  # Moviendo hacia abajo (Tony Mateo 23-eisn-2-044)
                     nueva_y = obstaculo.rect.top - self.alto
-                else:  # Moviendo hacia arriba
+                else:  # Moviendo hacia arriba (Tony Mateo 23-eisn-2-044)
                     nueva_y = obstaculo.rect.bottom
                 break
                 
-        # Actualizar posición en Y si no hay colisión o después de ajustar
+        # Actualizar posición en Y si no hay colisión o después de ajustar (Tony Mateo 23-eisn-2-044)
         self.y = nueva_y
         
-        # Actualizar el rectángulo completo con la nueva posición
+        # Actualizar el rectángulo completo con la nueva posición (Tony Mateo 23-eisn-2-044)
         self.rect = pygame.Rect(self.x, self.y, self.ancho, self.alto)
         
     def dibujar(self, pantalla):
-        # Obtener el frame actual de la animación, o usar sprite estático
+        # Obtener el frame actual de la animación, o usar sprite estático (Tony Mateo 23-eisn-2-044)
         frame = self.sprite_manager.get_animation_frame(self.id)
         if frame:
             pantalla.blit(frame, self.rect)
         else:
-            # Si no hay animación, usar sprite normal
+            # Si no hay animación, usar sprite normal (Tony Mateo 23-eisn-2-044)
             sprite = self.sprite_manager.get_sprite('jugador')
             if sprite:
                 pantalla.blit(sprite, self.rect)
@@ -150,14 +150,14 @@ class Jugador:
             x_centro = self.x + self.ancho // 2
             y_centro = self.y + self.alto // 2
             
-            # Cambiar estado a disparando brevemente
+            # Cambiar estado a disparando brevemente (Tony Mateo 23-eisn-2-044)
             self.estado = "disparando"
             nombre_anim = f"jugador_{self.estado}_{self.direccion}"
             self.sprite_manager.play_animation(nombre_anim, self.id)
-            # Después de 200ms, volver al estado quieto
+            # Después de 200ms, volver al estado quieto (Tony Mateo 23-eisn-2-044)
             pygame.time.set_timer(pygame.USEREVENT + 1, 200)
             
-            # Calcular dirección
+            # Calcular dirección (Tony Mateo 23-eisn-2-044)
             dx = posicion_mouse[0] - x_centro
             dy = posicion_mouse[1] - y_centro
             dist = math.hypot(dx, dy)
@@ -183,21 +183,21 @@ class NPC:
         self.ultimo_calculo = 0
         self.direccion = "derecha"
         self.estado = "quieto"
-        self.id = f"npc_{id(self)}"  # ID único usando la dirección en memoria
+        self.id = f"npc_{id(self)}"  # ID único usando la dirección en memoria (Tony Mateo 23-eisn-2-044)
         
-        # SOLUCIÓN CRÍTICA: Mejorar la ubicación inicial de NPCs
-        # Intentar hasta 100 veces encontrar una posición válida que NO colisione
+        # Mejorar la ubicación inicial de NPC (Tony Mateo 23-eisn-2-044)
+        # Intentar hasta 100 veces encontrar una posición válida que NO colisione (Tony Mateo 23-eisn-2-044)
         max_intentos = 100
         for intento in range(max_intentos):
-            # 1. Generar posición aleatoria
+            #  Generar posición aleatoria (Tony Mateo 23-eisn-2-044)
             self.x = random.randint(50, ANCHO - self.ancho - 50)
             self.y = random.randint(50, ALTO - self.alto - 50)
             
-            # 2. Crear rectángulo de colisión para verificación
+            # Crear rectángulo de colisión para verificación (Tony Mateo 23-eisn-2-044)
             self.rect = pygame.Rect(int(self.x), int(self.y), self.ancho, self.alto)
             
-            # 3. Verificar QUE NO COLISIONE con obstáculos
-            # IMPORTANTE: Lista completa de todos los obstáculos
+            # Verificar QUE NO COLISIONE con obstáculos (Tony Mateo 23-eisn-2-044)
+            #  Lista completa de todos los obstáculos
             colision = False
             for obstaculo in obstaculos:
                 if self.rect.colliderect(obstaculo.rect):
@@ -207,24 +207,24 @@ class NPC:
                     break
                     
             if colision:
-                continue  # Si hay colisión, intentar con otra posición
+                continue  # Si hay colisión, intentar con otra posición (Tony Mateo 23-eisn-2-044)
                 
-            # 4. Verificar que esté lejos del jugador (objetivo)
+            # Verificar que esté lejos del jugador objetivo (Tony Mateo 23-eisn-2-044)
             distancia_al_jugador = math.sqrt((self.x - objetivo.x)**2 + (self.y - objetivo.y)**2)
-            if distancia_al_jugador < 150:  # Mínimo 150 píxeles de distancia
+            if distancia_al_jugador < 150:  # Mínimo 150 píxeles de distancia (Tony Mateo 23-eisn-2-044)
                 if DEBUG_MODE:
                     print(f"NPC: Muy cerca del jugador en intento {intento}. Reintentando...")
-                continue  # Muy cerca del jugador, intentar otra posición
+                continue  # Muy cerca del jugador, intentar otra posición (Tony Mateo 23-eisn-2-044)
                 
-            # Si llegamos aquí, la posición es válida
+            # Si llegamos aquí, la posición es válida (Tony Mateo 23-eisn-2-044)
             self.posicion_valida = True
             if DEBUG_MODE:
                 print(f"NPC: Creado exitosamente en ({self.x}, {self.y}) después de {intento+1} intentos")
             break
             
-        # Solo construir el árbol de comportamiento si la posición es válida
+        # Solo construir el árbol de comportamiento si la posición es válida (Tony Mateo 23-eisn-2-044)
         if self.posicion_valida:
-            # Iniciar animación por defecto
+            # Iniciar animación por defecto (Tony Mateo 23-eisn-2-044)
             self.sprite_manager.play_animation(f"npc_quieto_{self.direccion}", self.id)
             self.construir_arbol_comportamiento()
         else:
@@ -232,23 +232,23 @@ class NPC:
                 print(f"NPC: No se pudo encontrar posición válida después de {max_intentos} intentos")
                 
     def construir_arbol_comportamiento(self):
-        # Construimos el árbol de comportamiento
+        # Construimos el árbol de comportamiento (Tony Mateo 23-eisn-2-044)
         def esta_cerca():
             dist = math.hypot(self.objetivo.x - self.x, self.objetivo.y - self.y)
             return dist < NPC_DISTANCIA_VISION
             
         def ver_objetivo(obstaculos):
-            # Comprobar si hay línea de visión directa al jugador
+            # Comprobar si hay línea de visión directa al jugador (Tony Mateo 23-eisn-2-044)
             if esta_cerca():
-                # Verificar si hay obstáculos entre el NPC y el jugador
+                # Verificar si hay obstáculos entre el NPC y el jugador (Tony Mateo 23-eisn-2-044)
                 dx = self.objetivo.x + self.objetivo.ancho//2 - (self.x + self.ancho//2)
                 dy = self.objetivo.y + self.objetivo.alto//2 - (self.y + self.alto//2)
                 dist = math.hypot(dx, dy)
                 
                 if dist > 0:
                     dx, dy = dx/dist, dy/dist
-                    # Comprobar varios puntos en la línea entre NPC y jugador
-                    pasos = int(dist / 20)  # Comprobar cada 20 píxeles
+                    # Comprobar varios puntos en la línea entre NPC y jugador (Tony Mateo 23-eisn-2-044)
+                    pasos = int(dist / 20)  
                     for i in range(1, pasos):
                         punto_x = self.x + self.ancho//2 + dx * i * 20
                         punto_y = self.y + self.alto//2 + dy * i * 20
@@ -265,24 +265,24 @@ class NPC:
             return True
             
         def vagar(obstaculos):
-            # Si no tenemos un camino o hace tiempo que no recalculamos, generamos un punto aleatorio
+            # Si no tenemos un camino o hace tiempo que no recalculamos, generamos un punto aleatorio (Tony Mateo 23-eisn-2-044)
             ahora = pygame.time.get_ticks()
             if not self.camino or ahora - self.ultimo_calculo > NPC_TIEMPO_VAGAR:
                 self.ultimo_calculo = ahora
                 destino_x = random.randint(0, ANCHO - self.ancho)
                 destino_y = random.randint(0, ALTO - self.alto)
                 
-                # Convertir a coordenadas de celda
+                # Convertir a coordenadas de celda (Tony Mateo 23-eisn-2-044)
                 destino = (int(destino_x // TAMANO_CELDA), int(destino_y // TAMANO_CELDA))
                 inicio = (int(self.x // TAMANO_CELDA), int(self.y // TAMANO_CELDA))
                 
-                # Calcular camino
+                # Calcular camino (Tony Mateo 23-eisn-2-044)
                 self.calcular_camino_a_punto(inicio, destino, obstaculos)
                 
             self.seguir_camino(obstaculos)
             return True
             
-        # Construir el árbol con una estructura más simple y robusta
+        # Construir el árbol con una estructura más simple y robusta (Tony Mateo 23-eisn-2-044)
         self.raiz = Selector([
             Secuencia([
                 Hoja(lambda obs=None: esta_cerca()),
@@ -293,11 +293,11 @@ class NPC:
         ])
         
     def es_celda_valida(self, x, y, obstaculos):
-        # Comprobar límites del mapa
+        # Comprobar límites del mapa (Tony Mateo 23-eisn-2-044)
         if not (0 <= x < ANCHO // TAMANO_CELDA and 0 <= y < ALTO // TAMANO_CELDA):
             return False
             
-        # Comprobar colisiones con obstáculos
+        # Comprobar colisiones con obstáculos (Tony Mateo 23-eisn-2-044)
         celda_rect = pygame.Rect(
             x * TAMANO_CELDA, 
             y * TAMANO_CELDA, 
@@ -314,7 +314,7 @@ class NPC:
     def calcular_camino_a_punto(self, inicio, fin, obstaculos):
         # Implementación básica de A*
         abiertos = []
-        abiertos_set = set([inicio])  # Para búsqueda más eficiente
+        abiertos_set = set([inicio])  # Para búsqueda más eficiente (Tony Mateo 23-eisn-2-044)
         cerrados = set()
         g_score = {inicio: 0}
         f_score = {inicio: self.heuristica(inicio, fin)}
@@ -326,13 +326,13 @@ class NPC:
             abiertos_set.remove(actual)
             
             if actual == fin:
-                # Reconstruir camino
+                # Reconstruir camino (Tony Mateo 23-eisn-2-044)
                 camino = []
                 while actual in came_from:
                     camino.append((actual[0] * TAMANO_CELDA + TAMANO_CELDA // 2, 
                                    actual[1] * TAMANO_CELDA + TAMANO_CELDA // 2))
                     actual = came_from[actual]
-                self.camino = camino[::-1]  # Invertir para tener desde inicio a fin
+                self.camino = camino[::-1]  # Invertir para tener desde inicio a fin (Tony Mateo 23-eisn-2-044)
                 return
                 
             cerrados.add(actual)
@@ -346,7 +346,7 @@ class NPC:
                 if vecino in cerrados:
                     continue
                     
-                # Calcular coste adicional para movimientos diagonales
+                # Calcular coste adicional para movimientos diagonales (Tony Mateo 23-eisn-2-044)
                 coste_mov = 1.4 if dx != 0 and dy != 0 else 1.0
                 tentative_g = g_score[actual] + coste_mov
                 
@@ -360,13 +360,13 @@ class NPC:
                         abiertos_set.add(vecino)
                         
     def calcular_camino(self, obstaculos):
-        # Convertir posiciones a coordenadas de celda
+        # Convertir posiciones a coordenadas de celda (Tony Mateo 23-eisn-2-044)
         inicio = (int(self.x // TAMANO_CELDA), int(self.y // TAMANO_CELDA))
         fin = (int(self.objetivo.x // TAMANO_CELDA), int(self.objetivo.y // TAMANO_CELDA))
         self.calcular_camino_a_punto(inicio, fin, obstaculos)
         
     def heuristica(self, a, b):
-        # Distancia diagonal (permite movimientos en 8 direcciones)
+        # Distancia diagonal (permite movimientos en 8 direcciones) (Tony Mateo 23-eisn-2-044)
         dx = abs(a[0] - b[0])
         dy = abs(a[1] - b[1])
         return max(dx, dy) + 0.4 * min(dx, dy)
@@ -393,25 +393,25 @@ class NPC:
                     
             self.estado = "moviendo"
             
-            # Actualizar dirección basado en el movimiento
+            # Actualizar dirección basado en el movimiento (Tony Mateo 23-eisn-2-044)
             if abs(dx) > abs(dy):
                 self.direccion = "derecha" if dx > 0 else "izquierda"
             else:
                 self.direccion = "arriba" if dy < 0 else "abajo"
                 
-            # Actualizar la animación
+            # Actualizar la animación (Tony Mateo 23-eisn-2-044)
             nombre_anim = f"npc_{self.estado}_{self.direccion}"
             self.sprite_manager.play_animation(nombre_anim, self.id)
             
             if dist > 0:
                 dx, dy = dx/dist * self.velocidad, dy/dist * self.velocidad
                 
-            # MOVIMIENTO CRÍTICO: Similar al del jugador, verificación completa
+            # Similar al del jugador, verificación completa (Tony Mateo 23-eisn-2-044)
             
-            # Intentar mover en X
+            # Intentar mover en X (Tony Mateo 23-eisn-2-044)
             nueva_x = int(self.x + dx)
             
-            # Crear un rect EXACTO para colisión en X (sin margen)
+            # Crear un rect EXACTO para colisión en X sin margen (Tony Mateo 23-eisn-2-044)
             temp_rect_x = pygame.Rect(
                 nueva_x, 
                 self.y, 
@@ -419,25 +419,25 @@ class NPC:
                 self.alto
             )
             
-            # Verificar colisión con cada obstáculo
+            # Verificar colisión con cada obstáculo (Tony Mateo 23-eisn-2-044)
             colision_x = False
             for obstaculo in obstaculos:
                 if temp_rect_x.colliderect(obstaculo.rect):
                     colision_x = True
-                    # Ajustar posición para que quede justo al borde del obstáculo
-                    if dx > 0:  # Moviendo a la derecha
+                    # Ajustar posición para que quede justo al borde del obstáculo (Tony Mateo 23-eisn-2-044)
+                    if dx > 0:  # Moviendo a la derecha (Tony Mateo 23-eisn-2-044)
                         nueva_x = obstaculo.rect.left - self.ancho
-                    else:  # Moviendo a la izquierda
+                    else:  # Moviendo a la izquierda (Tony Mateo 23-eisn-2-044)
                         nueva_x = obstaculo.rect.right
                     break
                     
-            # Solo actualizar si NO hay colisión o después de ajustar
+            # Solo actualizar si NO hay colisión o después de ajustar (Tony Mateo 23-eisn-2-044)
             self.x = nueva_x
             
-            # Intentar mover en Y
+            # Intentar mover en Y (Tony Mateo 23-eisn-2-044)
             nueva_y = int(self.y + dy)
             
-            # Crear un rect EXACTO para colisión en Y
+            # Crear un rect EXACTO para colisión en Y (Tony Mateo 23-eisn-2-044)
             temp_rect_y = pygame.Rect(
                 self.x, 
                 nueva_y, 
@@ -445,39 +445,39 @@ class NPC:
                 self.alto
             )
             
-            # Verificar colisión con cada obstáculo
+            # Verificar colisión con cada obstáculo (Tony Mateo 23-eisn-2-044)
             colision_y = False
             for obstaculo in obstaculos:
                 if temp_rect_y.colliderect(obstaculo.rect):
                     colision_y = True
-                    # Ajustar posición para que quede justo al borde del obstáculo
-                    if dy > 0:  # Moviendo hacia abajo
+                    # Ajustar posición para que quede justo al borde del obstáculo (Tony Mateo 23-eisn-2-044)
+                    if dy > 0:  # Moviendo hacia abajo (Tony Mateo 23-eisn-2-044)
                         nueva_y = obstaculo.rect.top - self.alto
-                    else:  # Moviendo hacia arriba
+                    else:  # Moviendo hacia arriba (Tony Mateo 23-eisn-2-044)
                         nueva_y = obstaculo.rect.bottom
                     break
                     
-            # Solo actualizar si NO hay colisión o después de ajustar
+            # Solo actualizar si NO hay colisión o después de ajustar (Tony Mateo 23-eisn-2-044)
             self.y = nueva_y
             
-            # Si hay colisión en ambos ejes, recalcular el camino
+            # Si hay colisión en ambos ejes, recalcular el camino (Tony Mateo 23-eisn-2-044)
             if colision_x and colision_y:
                 self.camino = []
                 
-            # CRÍTICO: Actualizar el rect completo al final para asegurar consistencia
+            # Actualizar el rect completo al final para asegurar consistencia (Tony Mateo 23-eisn-2-044)
             self.rect = pygame.Rect(self.x, self.y, self.ancho, self.alto)
             
     def ver_objetivo(self, obstaculos):
-        # Comprobar si hay línea de visión directa al jugador
-        # Verificar si hay obstáculos entre el NPC y el jugador
+        # Comprobar si hay línea de visión directa al jugador (Tony Mateo 23-eisn-2-044)
+        # Verificar si hay obstáculos entre el NPC y el jugador (Tony Mateo 23-eisn-2-044)
         dx = self.objetivo.x + self.objetivo.ancho//2 - (self.x + self.ancho//2)
         dy = self.objetivo.y + self.objetivo.alto//2 - (self.y + self.alto//2)
         dist = math.hypot(dx, dy)
         
         if dist > 0 and dist < NPC_DISTANCIA_VISION:
             dx, dy = dx/dist, dy/dist
-            # Comprobar varios puntos en la línea entre NPC y jugador
-            pasos = int(dist / 20)  # Comprobar cada 20 píxeles
+            # Comprobar varios puntos en la línea entre NPC y jugador (Tony Mateo 23-eisn-2-044)
+            pasos = int(dist / 20)  
             for i in range(1, pasos):
                 punto_x = self.x + self.ancho//2 + dx * i * 20
                 punto_y = self.y + self.alto//2 + dy * i * 20
@@ -488,15 +488,16 @@ class NPC:
                         return False
             return True
         return False
-        
+    
+    #Intenta disparar al objetivo si hay línea de visión despejada (Tony Mateo 23-eisn-2-044)
     def disparar(self, obstaculos):
-        """Intenta disparar al objetivo si hay línea de visión despejada"""
-        if self.ver_objetivo(obstaculos):  # Verificar línea de visión con los obstáculos
+        
+        if self.ver_objetivo(obstaculos):  # Verificar línea de visión con los obstáculos (Tony Mateo 23-eisn-2-044)
             ahora = pygame.time.get_ticks()
-            if ahora - self.tiempo_disparo > NPC_COOLDOWN_DISPARO:  # Disparar cada segundo
+            if ahora - self.tiempo_disparo > NPC_COOLDOWN_DISPARO:  # Disparar cada segundo (Tony Mateo 23-eisn-2-044)
                 self.tiempo_disparo = ahora
                 
-                # Cambiar estado a disparando
+                # Cambiar estado a disparando (Tony Mateo 23-eisn-2-044)
                 self.estado = "disparando"
                 nombre_anim = f"npc_{self.estado}_{self.direccion}"
                 self.sprite_manager.play_animation(nombre_anim, self.id)
@@ -505,7 +506,7 @@ class NPC:
                 dy = self.objetivo.y - self.y
                 dist = math.hypot(dx, dy)
                 
-                # Actualizar dirección basada en el objetivo
+                # Actualizar dirección basada en el objetivo (Tony Mateo 23-eisn-2-044)
                 if abs(dx) > abs(dy):
                     if dx > 0:
                         self.direccion = "derecha"
@@ -523,16 +524,16 @@ class NPC:
         return None
         
     def actualizar(self, obstaculos):
-        # Ejecutar el árbol de comportamiento pasando los obstáculos
+        # Ejecutar el árbol de comportamiento pasando los obstáculos (Tony Mateo 23-eisn-2-044)
         self.raiz.ejecutar(obstaculos)
         
     def dibujar(self, pantalla):
-        # Obtener el frame actual de la animación, o usar sprite estático
+        # Obtener el frame actual de la animación, o usar sprite estático (Tony Mateo 23-eisn-2-044)
         frame = self.sprite_manager.get_animation_frame(self.id)
         if frame:
             pantalla.blit(frame, self.rect)
         else:
-            # Si no hay animación, usar sprite normal
+            # Si no hay animación, usar sprite normal (Tony Mateo 23-eisn-2-044)
             sprite = self.sprite_manager.get_sprite('npc')
             if sprite:
                 pantalla.blit(sprite, self.rect)
@@ -568,7 +569,7 @@ class Bala:
         return True
         
     def dibujar(self, pantalla):
-        # Si hay un sprite disponible, usarlo; si no, dibujar un círculo
+        # Si hay un sprite disponible, usarlo; si no, dibujar un círculo (Tony Mateo 23-eisn-2-044)
         sprite_key = 'bala_jugador' if self.es_jugador else 'bala_npc'
         sprite = self.sprite_manager.get_sprite(sprite_key)
         if sprite:
@@ -586,31 +587,31 @@ class Moneda:
         self.rect = pygame.Rect(x, y, self.ancho, self.alto)
         self.sprite_manager = sprite_manager
         self.id = f"moneda_{id(self)}"
-        # Intentar iniciar animación si existe
+        # Intentar iniciar animación si existe (Tony Mateo 23-eisn-2-044)
         self.sprite_manager.play_animation("moneda_girando", self.id)
         
     def dibujar(self, pantalla):
-        # Obtener frame de la animación o usar sprite estático
+        # Obtener frame de la animación o usar sprite estático (Tony Mateo 23-eisn-2-044)
         frame = self.sprite_manager.get_animation_frame(self.id)
         if frame:
             pantalla.blit(frame, self.rect)
         else:
-            # Si no hay animación, usar sprite normal o dibujar un círculo amarillo
+            # Si no hay animación, usar sprite normal o dibujar un círculo amarillo (Tony Mateo 23-eisn-2-044)
             sprite = self.sprite_manager.get_sprite('moneda')
             if sprite:
                 pantalla.blit(sprite, self.rect)
             else:
-                # Dibujar un círculo amarillo como fallback
+                # Dibujar un círculo amarillo como fallback (Tony Mateo 23-eisn-2-044)
                 pygame.draw.circle(
                     pantalla, 
                     (255, 215, 0),  # Color oro
                     (self.x + self.ancho // 2, self.y + self.alto // 2), 
                     self.ancho // 2
                 )
-                # Añadir brillo para que parezca más una moneda
+                # Añadir brillo para que parezca más una moneda (Tony Mateo 23-eisn-2-044)
                 pygame.draw.circle(
                     pantalla, 
-                    (255, 255, 200),  # Color amarillo claro para el brillo
+                    (255, 255, 200),  # Color amarillo claro para el brillo (Tony Mateo 23-eisn-2-044)
                     (self.x + self.ancho // 4, self.y + self.alto // 4), 
                     self.ancho // 6
                 )
@@ -625,43 +626,43 @@ class Pocion:
         self.rect = pygame.Rect(x, y, self.ancho, self.alto)
         self.sprite_manager = sprite_manager
         self.id = f"pocion_{id(self)}"
-        # Intentar iniciar animación si existe
+        # Intentar iniciar animación si existe (Tony Mateo 23-eisn-2-044)
         self.sprite_manager.play_animation("pocion_brillando", self.id)
         
     def dibujar(self, pantalla):
-        # Obtener frame de la animación o usar sprite estático
+        # Obtener frame de la animación o usar sprite estático (Tony Mateo 23-eisn-2-044)
         frame = self.sprite_manager.get_animation_frame(self.id)
         if frame:
             pantalla.blit(frame, self.rect)
         else:
-            # Si no hay animación, usar sprite normal o dibujar una poción simple
+            # Si no hay animación, usar sprite normal o dibujar una poción simple (Tony Mateo 23-eisn-2-044)
             sprite = self.sprite_manager.get_sprite('pocion')
             if sprite:
                 pantalla.blit(sprite, self.rect)
             else:
                 # Dibujar un frasco rojo como fallback
-                # Cuerpo del frasco
+                # Cuerpo del frasco (Tony Mateo 23-eisn-2-044)
                 pygame.draw.rect(
                     pantalla, 
-                    (255, 0, 0),  # Rojo
+                    (255, 0, 0),  
                     pygame.Rect(self.x + 4, self.y + 8, self.ancho - 8, self.alto - 8)
                 )
-                # Cuello del frasco
+                # Cuello del frasco (Tony Mateo 23-eisn-2-044)
                 pygame.draw.rect(
                     pantalla, 
-                    (200, 200, 200),  # Gris claro
+                    (200, 200, 200),  
                     pygame.Rect(self.x + 7, self.y + 3, 6, 5)
                 )
-                # Tapa
+                # Tapa (Tony Mateo 23-eisn-2-044)
                 pygame.draw.rect(
                     pantalla, 
-                    (100, 100, 100),  # Gris oscuro
+                    (100, 100, 100),  
                     pygame.Rect(self.x + 6, self.y, 8, 3)
                 )
-                # Borde para el frasco
+                # Borde para el frasco (Tony Mateo 23-eisn-2-044)
                 pygame.draw.rect(
                     pantalla, 
-                    (255, 255, 255),  # Blanco
+                    (255, 255, 255),  
                     pygame.Rect(self.x + 4, self.y + 8, self.ancho - 8, self.alto - 8),
                     1
                 )
